@@ -1,6 +1,7 @@
 import { getUserWithUsername, postToJSON } from '../../lib/firebase'
 import UserProfile from '../../components/UserProfile'
 import PostFeed from '../../components/PostFeed'
+import Metatags from '../../components/Metatags';
 
 export async function getServerSideProps({ query }) {
   const { username } = query;
@@ -10,6 +11,13 @@ export async function getServerSideProps({ query }) {
   // JSON serializable data
   let user = null;
   let posts = null;
+
+  //If user doesn't exist -> send to 404 page
+  if (!userDoc) {
+    return {
+      notFound: true,
+    }
+  }
 
   if (userDoc) {
     user = userDoc.data();
@@ -29,8 +37,9 @@ export async function getServerSideProps({ query }) {
 export default function UserProfilePage({ user, posts }) {
   return (
     <main>
+      <Metatags title="UserProfile"/>
       <UserProfile user={user} />
-      <PostFeed posts={posts} />
+      <PostFeed posts={posts} admin={false}/>
     </main>
   );
 }
